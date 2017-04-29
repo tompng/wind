@@ -1,7 +1,7 @@
 function Grass(option, texture){
   var geometry = new THREE.BufferGeometry()
   vertices = []
-  var N=100
+  var N=80
   for(var ix=0;ix<N;ix++)for(var iy=0;iy<N;iy++){
     var x=2*(ix+4*Math.random()-2.5)/N-1
     var y=2*(iy+4*Math.random()-2.5)/N-1
@@ -61,9 +61,9 @@ Grass.shader = function(texture){
   uniform sampler2D texture;
   varying float grassz;
   void main(){
-    gl_FragColor = vec4(1,1,1,1);
-    gl_FragColor.rb = 0.6+0.2*sin(xycoord);
-    gl_FragColor.rgb *= 0.5+0.7*grassz;
+    gl_FragColor = vec4(0.5,0.8,0.4,1);
+    gl_FragColor.rb *= 1.0+0.2*sin(xycoord);
+    gl_FragColor.rgb *= 1.0+0.5*grassz;
   }
   */
 }

@@ -17,7 +17,7 @@ onload=function(){
   scene = new THREE.Scene();
   plane = new THREE.Mesh(planeGeometry, geoShader());
   grass = new Grass()
-  scene.add(plane);//plane.visible=false
+  scene.add(plane);
   scene.add(grass.mesh)
   wavescene = new THREE.Scene();
   var objects=[];
@@ -65,12 +65,12 @@ onload=function(){
   smoother = new TimeSmoother(SIZE, renderer, {type:THREE.FloatType,scale:0.5})
   animate();
   function animate(){
-    var camx=0.2*Math.sin(performance.now()/1000*0.13)
-    var camy=0.2*Math.sin(performance.now()/1000*0.12)
-    camera.position.set(camx,camy-2,1.5);
+    var camx=0.2*Math.sin(performance.now()/1000*0.23)*2
+    var camy=0.2*Math.sin(performance.now()/1000*0.22)*2
+    camera.position.set(camx,camy-1.8,1.25);
     camera.up.set(0,0,1);
-    camera.lookAt({x:camx, y:camy-0.25, z:0 });
-    camera.lookAt({x:0, y:-0.25, z:0 });
+    camera.lookAt({x:camx*0.5, y:camy*0.5-0.25, z:0 });
+    // camera.lookAt({x:0, y:-0.25, z:0 });
 
     var r=0.1;
     objects.forEach(function(obj){obj.mult.visible=obj.add.visible=false;});
@@ -144,20 +144,16 @@ function geoShader(){
   /*VERT
   varying vec2 coord;
   void main(){
-    vec2 xy = position.xy;
+    vec2 xy = position.xy*1.025;
     float z=sin(xy.x*2.7)+sin(xy.y*3.5)-cos(3.3*xy.x+2.9*xy.y)+cos(2.3*xy.x-3.1*xy.y);
-    gl_Position=projectionMatrix*modelViewMatrix*vec4(position.xy,z*0.1,1);
+    gl_Position=projectionMatrix*modelViewMatrix*vec4(xy,z*0.1,1);
   }
   */
   /*FRAG
   varying vec2 coord;
   uniform sampler2D wave;
   void main(){
-    vec4 uvha=texture2D(wave,coord);
-    gl_FragColor.rgb = vec3(1,1,1);//uvha.a*vec3(2,1,0.5);
-    gl_FragColor.a = 1.0;
-
-    gl_FragColor = vec4(0.3,0.5,0.3,1);
+    gl_FragColor = vec4(0.5,0.8,0.4,1);
   }
   */
 }
