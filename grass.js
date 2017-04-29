@@ -1,10 +1,10 @@
 function Grass(option, texture){
   var geometry = new THREE.BufferGeometry()
   vertices = []
-  var N=64
+  var N=100
   for(var ix=0;ix<N;ix++)for(var iy=0;iy<N;iy++){
-    var x=2*(ix+Math.random())/N-1
-    var y=2*(iy+Math.random())/N-1
+    var x=2*(ix+4*Math.random()-2.5)/N-1
+    var y=2*(iy+4*Math.random()-2.5)/N-1
     vertices.push(x,y,-1)
     vertices.push(x,y,0)
     vertices.push(x,y,1)
@@ -29,23 +29,32 @@ Grass.shader = function(texture){
     vertexShader: WaveSimulator.shaderCode(arguments.callee, 'VERT'),
     fragmentShader: WaveSimulator.shaderCode(arguments.callee, 'FRAG'),
     side: THREE.DoubleSide,
-    transparent: true,
-    depthTest: false,
-    blending: THREE.AdditiveBlending
+    transparent: false,
+    depthTest: true
   });
   /*VERT
   uniform float t;
   uniform sampler2D wave;
   varying vec2 xycoord;
   varying vec3 gpos, norm;
+  varying float grassz;
   void main(){
     vec2 xy = position.xy;
     xycoord=xy;
     float l = position.z;
     float a = 1.0-l*l;
-    vec2 d = -0.4*(texture2D(wave, xy*0.5+vec2(0.5,0.5)).xy-vec2(0.5,0.5));
-    vec3 pos = vec3(xy.x + l*0.005+a*d.x+a*sin(xy.x*123.45)*0.01, xy.y+0.01*a+a*d.y, 0.1*a);
-    gl_Position=projectionMatrix*vec4(pos,1);
+    grassz=a;
+    vec4 texcol = texture2D(wave, xy*0.5+vec2(0.5,0.5));
+    vec2 d = -0.4*(texcol.xy-vec2(0.5,0.5));
+    a*=0.5+2.0*texcol.a;
+    l*=1.0+2.0*texcol.a;
+    float z=+sin(xy.x*2.7)+sin(xy.y*3.5)-cos(3.3*xy.x+2.9*xy.y)+cos(2.3*xy.x-3.1*xy.y);
+    vec3 pos = vec3(
+      xy.x + l*0.004+a*d.x+a*sin(xy.x*123.45)*0.01,
+      xy.y + a*d.y+a*sin(xy.y*456.45)*0.01,
+      0.15*a-0.01*(1.0-dot(d,d))+z*0.1
+    );
+    gl_Position=projectionMatrix*modelViewMatrix*vec4(pos,1);
   }
   */
   /*FRAG
@@ -53,9 +62,11 @@ Grass.shader = function(texture){
   varying vec3 gpos, norm;
   uniform vec3 color;
   uniform sampler2D texture;
+  varying float grassz;
   void main(){
     gl_FragColor = vec4(1,1,1,1);
-    gl_FragColor.rb = 0.8+0.2*sin(xycoord);
+    gl_FragColor.rb = 0.6+0.2*sin(xycoord);
+    gl_FragColor.rgb *= 0.2+grassz;
   }
   */
 }

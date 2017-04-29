@@ -12,7 +12,7 @@ var SIZE=256;
 
 onload=function(){
   var planeGeometry = new THREE.PlaneBufferGeometry(2,2);
-  camera = new THREE.Camera();
+  camera = new THREE.PerspectiveCamera(45,1,0.1,100);
   scene = new THREE.Scene();
   plane = new THREE.Mesh(planeGeometry, smokeShader());
   grass = new Grass()
@@ -64,6 +64,14 @@ onload=function(){
   window.dtav=0;
   animate();
   function animate(){
+    var camx=0.2*Math.sin(performance.now()/1000*0.13)
+    var camy=0.2*Math.sin(performance.now()/1000*0.12)
+    camera.position.set(camx,camy-2,1.5);
+    // camera.position.set(camx,camy-1.5,1);
+    camera.up.set(0,0,1);
+    camera.lookAt({x:camx, y:camy-0.25, z:0 });
+    camera.lookAt({x:0, y:-0.25, z:0 });
+
     var r=0.1;
     objects.forEach(function(obj){obj.mult.visible=obj.add.visible=false;});
     var ps=[];if(mouse)ps.push(mouse);
@@ -138,6 +146,7 @@ function smokeShader(){
   void main(){
     coord=position.xy/2.0+vec2(0.5,0.5);
     gl_Position=vec4(position,1);
+    gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1);
   }
   */
   /*FRAG
